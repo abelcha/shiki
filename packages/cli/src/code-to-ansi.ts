@@ -1,11 +1,10 @@
+import process from 'node:process'
 import c from 'chalk'
 import type { BundledLanguage, BundledTheme } from 'shiki'
 import { FontStyle, codeToTokensBase, getSingletonHighlighter } from 'shiki'
 import { hexApplyAlpha } from './colors'
 
 export async function codeToANSI(code: string, lang: BundledLanguage, theme: BundledTheme): Promise<string> {
-  let output = ''
-
   const lines = await codeToTokensBase(code, {
     lang,
     theme,
@@ -13,8 +12,8 @@ export async function codeToANSI(code: string, lang: BundledLanguage, theme: Bun
 
   const highlight = await getSingletonHighlighter()
   const themeReg = highlight.getTheme(theme)
-
   for (const line of lines) {
+    let output = ''
     for (const token of line) {
       let text = token.content
       const color = token.color || themeReg.fg
@@ -27,7 +26,7 @@ export async function codeToANSI(code: string, lang: BundledLanguage, theme: Bun
       output += text
     }
     output += '\n'
+    process.stdout.write(output)
   }
-
-  return output
+  return ""
 }
